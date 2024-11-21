@@ -1,4 +1,4 @@
-# My_Coffee_Shop
+# Coffee Shop App Project
 Repository for NgopiData Coffee Shop App Project
 
 ## Terminal
