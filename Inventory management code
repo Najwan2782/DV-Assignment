@@ -1,0 +1,91 @@
+import sqlite3
+from datetime import datetime
+
+# Connect to the database
+conn = sqlite3.connect("Coffee_Shop_Database.db")
+cursor = conn.cursor()
+
+# Function to monitor inventory and get current stock levels
+def monitor_inventory():
+    print("\nCurrent Inventory Levels:")
+    cursor.execute("""
+        SELECT p.product_id, p.name, p.stock_quantity
+        FROM Products p
+        ORDER BY p.product_id;
+    """)
+    results = cursor.fetchall()
+    for product_id, name, stock_quantity in results:
+        print(f"Product: {name} (ID: {product_id}), Stock: {stock_quantity}")
+    return results
+
+# Function to update inventory when a sale is made
+def reduce_inventory(product_id, quantity_sold, updated_by):
+    # Check current stock
+    cursor.execute("""
+        SELECT stock_quantity, name FROM Products WHERE product_id = ?;
+    """, (product_id,))
+    result = cursor.fetchall()[0]
+    
+    if result:
+        current_stock = result[0]
+        name = result[1]
+        if quantity_sold > current_stock:
+            print(f"Error: Not enough stock for Product ID {name}. Current stock: {current_stock}")
+            return
+        
+        # Update the stock quantity in Products table
+        new_stock = current_stock - quantity_sold
+        cursor.execute("""
+            UPDATE Products SET stock_quantity = ? WHERE product_id = ?;
+        """, (new_stock, product_id))
+        
+        # Log the change in the Inventory table
+        cursor.execute("""
+            INSERT INTO Inventory (product_id, change_type, quantity_changed, updated_by)
+            VALUES (?, 'Consumption', ?, ?);
+        """, (product_id, quantity_sold, updated_by))
+        
+        conn.commit()
+        
+    else:
+        print(f"Error: Product ID {product_id} not found.")
+
+# Function to check for low inventory and send alerts
+def check_low_inventory(product_id):
+    cursor.execute("""
+        SELECT name, stock_quantity FROM Products WHERE product_id = ?;
+    """, (product_id,))
+    result = cursor.fetchall()[0]
+    
+    if result:
+        stock_quantity = result[0]
+        name = result[1]
+        # Assume 20% of the initial stock is the threshold
+        low_stock_threshold = 20
+        if stock_quantity < low_stock_threshold:
+            print(f"ALERT: {name} stock is low ({stock_quantity} units). Please restock!")
+            send_notification(name, stock_quantity)
+
+# Function to send notifications to the admin/manager
+def send_notification(product_name, stock_quantity):
+    # Simulate sending a notification
+    print(f"Notification sent to admin: {product_name} stock is low ({stock_quantity} units). Please restock.")
+    #paan tambah code notification kat sini ehek
+
+
+# Example usage:
+if __name__ == "__main__":
+    # Display current inventory
+    results = monitor_inventory()
+    
+    #Simulate a sale: Reduce inventory for a product
+    #will beecall after sucessful payment
+    reduce_inventory(product_id=1, quantity_sold=20, updated_by=1)  
+    
+    # Display updated inventory
+    monitor_inventory()
+
+    check_low_inventory(1)
+
+# Close the database connection
+conn.close()
