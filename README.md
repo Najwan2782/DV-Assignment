@@ -1,6 +1,7 @@
 # Coffee Shop App Project
 Repository for NgopiData Cafe App Project
 
+
 ## Details
 TEB3113: DATA VISUALIZATION
 
@@ -12,4 +13,8 @@ NGOPI DATA
 5.	MUHAMMAD FARHAN BIN ROSLI	[21001200]
 
 
+## Extra
+The admin page can be accessed through the details as below:
 
+Username: admin
+Password: admin
