@@ -1,7 +1,7 @@
 # Coffee Shop App Project
 Repository for NgopiData Cafe App Project
 
-## Terminal
+## Details
 TEB3113: DATA VISUALIZATION
 
 NGOPI DATA
